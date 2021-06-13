@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>GCSE Attainment 8 Score by Gender</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #legend ul {
+            margin: 0 10px 15px 0px;
+            padding: 0 2px 2px 2px;
+            display: inline;
+        }
+
+        #legend ul li {
+            padding: 0;
+            list-style: none;
+            font: 16px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            color: #333;
+            display: inline;
+        }
+
+        #legtext {
+            margin: 10px 0px 8px 0px;
+            padding: 0;
+            font: 14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            color: #333;
+        }
+
+        #legtext2 {
+            margin: 0px 0px 6px 0px;
+            padding: 0;
+            font: 14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            color: #333;
+        }
+
+
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .map-overlay {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 380px;
+            min-width: 380px;
+            top: 0;
+            left: 0;
+            padding: 10px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay table {
+            border: none;
+            width: 100%;
+        }
+
+        .map-overlay h2 {
+
+            line-height: 50px;
+            display: block;
+            margin: 0 0 0 0px;
+        }
+
+        .map-overlay label {
+            font: 16px/18px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            vertical-align: bottom;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .map-overlay p.credit {
+            margin: 0;
+            padding: 0;
+        }
+
+        .mapboxgl-popup {
+            max-width: 500px;
+            min-width: 180px;
+            font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            padding: 0;
+            margin: 0, 0, 0, 20px;
+        }
+
+        .mapboxgl-popup-tip-container {
+            width: 0px;
+            height: 0px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .mapboxgl-popup-tip {
+            width: 0;
+            height: 0;
+            margin: 0;
+            border-left: 0 solid transparent;
+            border-right: 0 solid transparent;
+            border-top: 0 solid transparent;
+            box-shadow: none;
+        }
+
+        .map-overlay input {
+            display: inline-block;
+            position: relative;
+            vertical-align: middle;
+            margin: 5px;
+            padding: 0;
+        }
+
+        .map-overlay input#slider {
+            background-color: transparent;
+            display: inline-block;
+            width: 95%;
+            margin: 0 0 0 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+
+    <div class='map-overlay top'>
+        <div class='map-overlay-inner'>
+            <h2>London Pupils' GCSE Attainment 8 Score</h2>
+            <table>
+                <tr>
+                    <td>
+                        <div id='legend'>
+                            <div id='legtext2'>
+                                Choose layer:
+                            </div>
+                            <input type="radio" name="layers" id="layer1" value="Overall"
+                                checked><label>Overall&nbsp;</label>
+                            <input type="radio" name="layers" id="layer2" value="gender"><label>Gender difference
+                                &nbsp;</label>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class='legendtd'>
+                        <div id='legend'>
+                            <div id='legtext'>
+                                Circle areas proportional to Average Score:
+                            </div>
+                            <ul>
+                                <li><canvas id="myCanvas1" width="20" height="15" style="border: 0px;"></canvas>
+                                    Overall&nbsp;&nbsp;&nbsp;&nbsp;
+                                </li>
+                                <li><canvas id="myCanvas2" width="20" height="15" style="border: 0px; "></canvas>
+                                    Boy&nbsp;&nbsp;&nbsp;&nbsp;
+                                </li>
+
+                                <li><canvas id="myCanvas3" width="20" height="15" style="border: 0px; "></canvas>
+                                    Girl
+                                </li>
+
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input id='slider' type='range' min='0' max='3' step='1' value='0' list='tickmarks' />
+                        <datalist id="tickmarks">
+                            <option value="0" label="2016">
+                            <option value="1">
+                            <option value="2">
+                            <option value="3">
+                        </datalist>
+                    </td>
+                    <td>
+                        <div id='yearprint'>
+                            <label id='year'>2016</label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p class="credit">GCSE results data: <a
+                    href="https://data.london.gov.uk/dataset/gcse-results-by-borough">DfE</a>.
+                London borough data: <a href="https://data.london.gov.uk/dataset/london_boroughs">GLA</a>
+            </p>
+        </div>
+    </div>
+
+
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibGluZ3J1ZmVuZyIsImEiOiJja2syZmoxaGowaXZoMzJxbzdjYm83enluIn0.ddM9J2lcLfGXLxDDIGV17A'; // Put Mapbox Public Access token
+
+        // Load a new map in the 'map' HTML div
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/lingrufeng/ckkpds3ky0sub17nuwkzmipfe', // style location
+            center: [-0.1, 51.5], // starting position [lng, lat]
+            zoom: 9.6 // starting zoom
+        });
+
+        // Create an array of the available data years
+        var years = [
+            '2016',
+            '2017',
+            '2018',
+            '2019'
+        ];
+
+        // Draw circles at the legend
+        var c = document.getElementById("myCanvas1");
+        var context = c.getContext("2d");
+        context.translate(-5, -7);
+        context.strokeStyle = "#2c2f33";
+        context.beginPath();
+        context.arc(15, 15, 6, Math.PI * 2, 0, true);
+        context.stroke();
+
+        var c = document.getElementById("myCanvas2");
+        var context = c.getContext("2d");
+        context.translate(-5, -7);
+        context.strokeStyle = "#66ccff";
+        context.beginPath();
+        context.arc(15, 15, 6, Math.PI * 2, 0, true);
+        context.stroke();
+
+        var c = document.getElementById("myCanvas3");
+        var context = c.getContext("2d");
+        context.translate(-5, -7);
+        context.strokeStyle = "#ff0000";
+        context.beginPath();
+        context.arc(15, 15, 6, Math.PI * 2, 0, true);
+        context.stroke();
+
+
+
+
+        map.on('load', function () {
+
+
+            // This is the main function that runs when the user changes the data year
+            function setYear(year) {
+                // Change the label of the year according to the user's options
+                document.getElementById('year').textContent = years[year];  // Set the label to the correct year
+
+                // Gets the Property of the Overall Layer
+                var pp = map.getPaintProperty('GCSE_score_point', 'circle-radius');
+                // Modify the Property of the Element
+                pp.property = "a8_" + years[year];  // update the pp circle-radius to the new column set by the user
+                // Set the Property of a new Element
+                map.setPaintProperty('GCSE_score_point', 'circle-radius', pp);
+
+                // Update the Labels textfield on the Overall Layer
+                var yearcol = "a8_" + String(years[year]);
+                var textfield = "{" + yearcol + "}";
+                map.setLayoutProperty('labels', 'text-field', textfield);
+
+                // Updated gender layer labels textfield (red)
+                var yearcol = "df_" + String(years[year]);
+                var textfield = "{" + yearcol + "}";
+                map.setLayoutProperty('labels_gender', 'text-field', textfield);
+
+                var filters = ['>', yearcol, 0];
+                map.setFilter('labels_gender', filters);
+
+                // Updated gender layer labels textfield (blue)
+                var yearcol = "df_" + String(years[year]);
+                var textfield = "{" + yearcol + "}";
+                map.setLayoutProperty('labels_gender2', 'text-field', textfield);
+
+                var filters = ['<', yearcol, 0];
+                map.setFilter('labels_gender2', filters);
+
+                // Gets the Property of the boy layer
+                var ppboy = map.getPaintProperty('boy_score', 'circle-radius');
+                // Modify the Property of the Element
+                ppboy.property = "a8_b_" + years[year];  // update the pp circle-radius to the new column set by the user
+                // Set the Property of a new Element
+                map.setPaintProperty('boy_score', 'circle-radius', ppboy);
+
+                // Gets the Property of the girl layer
+                var ppgirl = map.getPaintProperty('girl_score', 'circle-radius');
+                // Modify the Property of the Element
+                ppgirl.property = "a8_g_" + years[year];  // update the pp circle-radius to the new column set by the user
+                // Set the Property of a new Element
+                map.setPaintProperty('girl_score', 'circle-radius', ppgirl);
+            }
+
+            // Add overall layer
+            map.addLayer({
+                id: 'GCSE_score_point',
+                type: 'circle',
+                source: {
+                    type: 'vector',
+                    url: 'mapbox://lingrufeng.0qnpkhsg' // Mapbox tileset Map ID
+                },
+                'source-layer': 'GCSE_score_point-6l1koh', // name of tilesets
+                'layout': {
+                    'visibility': 'visible'
+                },
+                paint: {
+                    'circle-color': '#fffef7',
+                    'circle-opacity': 0.8,
+                    'circle-stroke-width': {
+                        stops: [[8, 2], [13, 4], [16, 5]]
+                    },
+                    'circle-stroke-color': '#2c2f33',
+                    'circle-stroke-opacity': 0.8,
+                    'circle-radius': {
+                        property: 'a8_2016',
+                        stops: [
+                            [{ zoom: 10, value: 40 }, 10],
+                            [{ zoom: 10, value: 62 }, 50],
+                            [{ zoom: 16, value: 40 }, 30],
+                            [{ zoom: 16, value: 62 }, 150],
+                        ]
+                    }
+                }
+            });
+
+            // Add overall layer labels
+            map.addLayer({
+                'id': 'labels',
+                'type': 'symbol',
+                'source': 'GCSE_score_point',
+                'source-layer': 'GCSE_score_point-6l1koh', // name of tilesets
+                'layout': {
+                    'visibility': 'visible',
+                    'text-field': '{a8_2016}',
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                    'text-size': {
+                        stops: [[8, 15], [12.5, 18], [12.6, 30], [16, 40]]
+                    }
+                },
+                'paint': {
+                    'text-color': '#2c2f33',
+                    'text-opacity': 1.0
+                }
+            });
+
+            // Draw girl Proportional Circle Layer
+            map.addLayer({
+                id: 'girl_score',
+                type: 'circle',
+                source: {
+                    type: 'vector',
+                    url: 'mapbox://lingrufeng.0qnpkhsg' // Mapbox tileset Map ID
+                },
+                'source-layer': 'GCSE_score_point-6l1koh', // name of tilesets
+                'layout': {
+                    'visibility': 'none'
+                },
+                paint: {
+                    'circle-color': '#fffef7',
+                    'circle-opacity': 0.5,
+                    'circle-stroke-width': {
+                        stops: [[8, 2], [13, 4], [16, 5]]
+                    },
+                    'circle-stroke-color': '#ff0000',
+                    'circle-stroke-opacity': 0.7,
+                    'circle-radius': {
+                        property: 'a8_g_2016',
+                        stops: [
+                            [{ zoom: 10, value: 40 }, 10],
+                            [{ zoom: 10, value: 62 }, 50],
+                            [{ zoom: 16, value: 40 }, 30],
+                            [{ zoom: 16, value: 62 }, 150],
+                        ]
+                    }
+                }
+            });
+
+            //  Draw boy Proportional Circle Layer
+            map.addLayer({
+                id: 'boy_score',
+                type: 'circle',
+                source: {
+                    type: 'vector',
+                    url: 'mapbox://lingrufeng.0qnpkhsg' // Mapbox tileset Map ID
+                },
+                'source-layer': 'GCSE_score_point-6l1koh', // name of tilesets
+                'layout': {
+                    'visibility': 'none'
+                },
+                paint: {
+                    'circle-color': '#fffef7',
+                    'circle-opacity': 0.5,
+                    'circle-stroke-width': {
+                        stops: [[8, 2], [13, 4], [16, 5]]
+                    },
+                    'circle-stroke-color': '#66ccff',
+                    'circle-stroke-opacity': 1,
+                    'circle-radius': {
+                        property: 'a8_b_2016',
+                        stops: [
+                            [{ zoom: 10, value: 40 }, 10],
+                            [{ zoom: 10, value: 62 }, 50],
+                            [{ zoom: 16, value: 40 }, 30],
+                            [{ zoom: 16, value: 62 }, 150],
+                        ]
+                    }
+                }
+            });
+
+
+            // Add gender difference layer labels (boy)
+            map.addLayer({
+                'id': 'labels_gender2',
+                'type': 'symbol',
+                'source': 'GCSE_score_point',
+                'source-layer': 'GCSE_score_point-6l1koh', // name of tilesets
+                'layout': {
+                    'visibility': 'none',
+                    'text-field': '{df_2016}',
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                    'text-size': {
+                        stops: [[8, 15], [12.5, 18], [12.6, 30], [16, 40]]
+                    }
+                },
+                'paint': {
+                    'text-color': '#66ccff',
+                    'text-opacity': 0.75
+                }
+            });
+            map.setFilter('labels_gender2', ['<', 'df_2016', '0']);
+
+            // Add gender difference layer labels (girl)
+            map.addLayer({
+                'id': 'labels_gender',
+                'type': 'symbol',
+                'source': 'GCSE_score_point',
+                'source-layer': 'GCSE_score_point-6l1koh', // name of tilesets
+                'layout': {
+                    'visibility': 'none',
+                    'text-field': '{df_2016}',
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                    'text-size': {
+                        stops: [[8, 15], [12.5, 18], [12.6, 30], [16, 40]]
+                    }
+                },
+                'paint': {
+                    'text-color': '#ff0000',
+                    'text-opacity': 0.75
+                }
+            });
+
+            //Event listener for layer switch
+            document.getElementById("layer1").addEventListener("click", function () {
+
+                map.setLayoutProperty('boy_score', 'visibility', 'none');
+                map.setLayoutProperty('girl_score', 'visibility', 'none');
+                map.setLayoutProperty('GCSE_score_point', 'visibility', 'visible');
+                map.setLayoutProperty('labels', 'visibility', 'visible');
+                map.setLayoutProperty('labels_gender', 'visibility', 'none');
+                map.setLayoutProperty('labels_gender2', 'visibility', 'none');
+            });
+
+            document.getElementById("layer2").addEventListener("click", function () {
+
+                map.setLayoutProperty('boy_score', 'visibility', 'visible');
+                map.setLayoutProperty('girl_score', 'visibility', 'visible');
+                map.setLayoutProperty('GCSE_score_point', 'visibility', 'none');
+                map.setLayoutProperty('labels', 'visibility', 'none');
+                map.setLayoutProperty('labels_gender', 'visibility', 'visible');
+                map.setLayoutProperty('labels_gender2', 'visibility', 'visible');
+
+            });
+
+            // Assign an event listner to the slider so that the setYear function runs when the user changes the slider
+            document.getElementById('slider').addEventListener('input', function (e) {
+                var year = parseInt(e.target.value);
+                setYear(year);
+            });
+
+            var mypopup = new mapboxgl.Popup({ offset: [150, 50], closeButton: false });
+
+            // Another event listener that adds the popup when the user puts their cursor over the tube circles
+            map.on('mouseover', 'GCSE_score_point', function (e) {
+                mypopup
+                    .setLngLat(e.features[0].geometry.coordinates)
+                    .setHTML("<h3>" + e.features[0].properties.name + "</h3>" +
+                        "<table><tr><th>Year</th><th>Average</th></tr><tr><td>2016</td><td>" +
+                        e.features[0].properties.a8_2016 + "</td></tr><tr><td>2017</td><td>" +
+                        e.features[0].properties.a8_2017 + "</td></tr><tr><td>2018</td><td>" +
+                        e.features[0].properties.a8_2018 + "</td></tr><tr><td>2019</td><td>" +
+                        e.features[0].properties.a8_2019 + "</td></tr></table>")
+                    .addTo(map);
+            });
+
+
+            // Change the cursor to a pointer when the mouse is over the stations layer.
+            map.on('mouseenter', 'GCSE_score_point', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves and remove the popup window.
+
+            map.on('mouseleave', 'GCSE_score_point', function () {
+                map.getCanvas().style.cursor = '';
+                mypopup.remove();
+            });
+
+            var mypopup2 = new mapboxgl.Popup({ offset: [150, 50], closeButton: false });
+
+            // Another event listener that adds the popup when the user puts their cursor over the tube circles
+            map.on('mouseover', 'girl_score', function (e) {
+                mypopup2
+                    .setLngLat(e.features[0].geometry.coordinates)
+                    .setHTML("<h3>" + e.features[0].properties.name + "</h3>" +
+                        "<table><tr><th>Year</th><th>Difference</th><th>Boy</th><th>Girl</th></tr><tr><td>2016</td><td>" +
+                        e.features[0].properties.df_2016 + "</td><td>" +
+                        e.features[0].properties.a8_b_2016 + "</td><td>" +
+                        e.features[0].properties.a8_g_2016 + "</td></tr><tr><td>2017</td><td>" +
+                        e.features[0].properties.df_2017 + "</td><td>" +
+                        e.features[0].properties.a8_b_2017 + "</td><td>" +
+                        e.features[0].properties.a8_g_2017 + "</td></tr><tr><td>2018</td><td>" +
+                        e.features[0].properties.df_2018 + "</td><td>" +
+                        e.features[0].properties.a8_b_2018 + "</td><td>" +
+                        e.features[0].properties.a8_g_2018 + "</td></tr><tr><td>2019</td><td>" +
+                        e.features[0].properties.df_2019 + "</td><td>" +
+                        e.features[0].properties.a8_b_2019 + "</td><td>" +
+                        e.features[0].properties.a8_g_2019 + "</td></tr></table>")
+                    .addTo(map);
+            });
+
+
+            // Change the cursor to a pointer when the mouse is over the stations layer.
+            map.on('mouseenter', 'girl_score', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves and remove the popup window.
+
+            map.on('mouseleave', 'girl_score', function () {
+                map.getCanvas().style.cursor = '';
+                mypopup.remove();
+            });
+            
+        });
+
+
+    </script>
+
+</body>
+
+</html>
